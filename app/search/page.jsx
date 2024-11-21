@@ -1,9 +1,7 @@
-"use client"
+"use client";
 import React from "react";
-import Image from "next/image";
 import Navbar from "@components/Navbar";
-import RecipeCard from "@components/RecipeCard";
-import searchIcon from "../../public/assets/icons/svg/searchIcon.svg";
+import SearchBarWithTags from "@components/SearchBarWithTags";
 import { useState, useEffect } from "react";
 import RecipeGrid from "@components/RecipeGrid";
 import Filter from "@components/Filter";
@@ -97,42 +95,33 @@ const Home = () => {
       <section
         className={`hero-page text-center h-[510px] bg-hero bg-no-repeat bg-cover bg-center pt-10 text-white`}
       >
-        <h1 className="font-playfair font-normal text-[80px]">
-          What’s In Your Kitchen Today?
-        </h1>
-        <p className="max-w-3xl mx-auto mt-8 font-semibold text-center sm:text-lg">
-          PantryChef helps you find new meals you can make with the ingredients
-          you already have. Just enter the ingredients and press generate to
-          find what you can make with your ingredients.
-        </p>
-        <div className="recipe-action pt-7">
-          <div className="flex items-center max-w-lg p-3 mx-auto my-4 mb-6 bg-white rounded-full shadow-md">
-            <Image
-              src={searchIcon}
-              width={25}
-              height={25}
-              alt="Chef Hat Icon"
-            />
-            <input
-              type="text"
-              placeholder="Add Ingredients (e.g. egg, flour, milk, nutmeg...)"
-              className="w-full ml-4 text-green-700 bg-transparent focus:outline-none placeholder-pastel-green placeholder-opacity-60"
-            />
-          </div>
+        <div className="container px-4 mx-auto">
+          {/* Title */}
+          <h1 className="font-playfair font-normal text-4xl sm:text-5xl md:text-6xl lg:text-[80px] leading-tight">
+            What’s In Your Kitchen Today?
+          </h1>
 
-          <button className="px-6 py-2 text-lg rounded-full bg-pastel-green hover:bg-pastel-green hover:bg-opacity-60">
-            Generate
-          </button>
+          {/* Subtitle */}
+          <p className="max-w-xl mx-auto mt-6 text-base font-semibold text-center sm:max-w-2xl md:max-w-3xl sm:mt-8 sm:text-lg md:text-xl">
+            PantryChef helps you find new meals you can make with the
+            ingredients you already have. Just enter the ingredients and press
+            generate to find what you can make with your ingredients.
+          </p>
+
+          {/* Search Bar */}
+          <div className="mt-6 sm:mt-8">
+            <SearchBarWithTags />
+          </div>
         </div>
       </section>
       <section className="mt-24 mb-24 filter-bar">
-        <Filter/>
+        <Filter />
       </section>
       <section className="search-results">
         <h1 className="mb-20 text-4xl font-bold text-center font-mulish text-pastel-green">
           20,000+ Suggested Recipes
         </h1>
-        <RecipeGrid recipe={recipes}/>
+        <RecipeGrid recipe={recipes} />
       </section>
     </div>
   );

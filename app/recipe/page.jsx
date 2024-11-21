@@ -1,17 +1,45 @@
 "use client";
+import React, { useState } from "react";
+import Navbar from "@components/Navbar";
 import RecipeCard from "@components/RecipeCard";
 import recipes from "@models/recipes";
 
 const RecipeDetails = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDays, setSelectedDays] = useState([]);
+  const recipeName = "Chocolate Chip Peanut Butter Oatmeal";
+
+  const daysOfWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
+  const handleDayToggle = (day) => {
+    setSelectedDays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
+    );
+  };
+
+  const handleDone = () => {
+    console.log("Selected Days:", selectedDays);
+    console.log("Recipe Name:", recipeName);
+    setIsModalOpen(false);
+  };
+
   return (
+    <>
+    <Navbar/>
     <section className="my-10 bg-[#F4EDE2] p-8 rounded-2xl max-w-screen-lg mx-auto space-y-12">
       {/* Top Section: Recipe Overview */}
       <div className="flex flex-col items-start justify-between md:flex-row md:items-center">
         {/* Left Section */}
         <div className="space-y-4 md:w-1/2">
-          <h1 className="text-3xl font-bold text-leaf-brown">
-            Chocolate Chip Peanut Butter Oatmeal
-          </h1>
+          <h1 className="text-3xl font-bold text-leaf-brown">{recipeName}</h1>
           <p className="font-medium text-gray-700 text-md">
             Health Rating :{" "}
             <span className="font-bold text-leaf-brown">91/100</span>
@@ -66,7 +94,10 @@ const RecipeDetails = () => {
               </svg>
               Add To Favorites
             </button>
-            <button className="flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-leaf-brown border-leaf-brown hover:bg-leaf-brown hover:text-white">
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-leaf-brown border-leaf-brown hover:bg-leaf-brown hover:text-white"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 className="w-5 h-5"
@@ -148,11 +179,14 @@ const RecipeDetails = () => {
         <h2 className="mb-4 text-2xl font-bold text-leaf-brown">
           Related Recipes
         </h2>
-        <div className="flex p-4 space-x-4 overflow-x-scroll">
+        <div
+          className="flex p-4 space-x-4 overflow-x-scroll"
+          key={recipes.map((recipe) => recipe.id)}
+        >
           {recipes.map((recipe) => (
             <RecipeCard
               id={recipe.id}
-              image={recipe.image} // Replace with your image URL
+              image={recipe.image}
               title={recipe.title}
               tags={recipe.tags}
               time={recipe.time}
@@ -161,7 +195,47 @@ const RecipeDetails = () => {
           ))}
         </div>
       </div>
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-[#F4EDE2] rounded-2xl shadow-lg w-96 p-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xl font-bold text-leaf-brown">Choose Days</h2>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-lg font-bold text-cherry-red hover:underline"
+              >
+                Close
+              </button>
+            </div>
+            <div className="mt-4 space-y-3">
+              {daysOfWeek.map((day) => (
+                <label
+                  key={day}
+                  className="flex items-center space-x-2 text-leaf-brown"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedDays.includes(day)}
+                    onChange={() => handleDayToggle(day)}
+                    className="form-checkbox"
+                  />
+                  <span className="text-lg font-medium">{day}</span>
+                </label>
+              ))}
+            </div>
+            <button
+              onClick={handleDone}
+              className="w-full py-2 mt-6 font-semibold text-white rounded-full bg-pastel-green hover:bg-opacity-60"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
     </section>
+    </>
   );
 };
 

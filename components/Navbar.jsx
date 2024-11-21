@@ -4,21 +4,21 @@ import chefHat from '../public/assets/icons/svg/chefHat.svg'
 
 const navbar = () => {
   return (
-    <nav className="bg-pastel-green p-4">
-      <div className="container mx-auto flex justify-between items-center">
+    <nav className="p-4 bg-pastel-green">
+      <div className="container flex items-center justify-between mx-auto">
         <div>
           <a
             href="#login"
-            className="text-white font-mulish text-lg underline hover:no-underline"
+            className="text-lg text-white underline font-mulish hover:no-underline"
           >
             Login
           </a>
         </div>
 
         <div className="flex items-center space-x-2">
-          <span className="text-white text-4xl font-bold font-pacifico">
+          <a className="text-4xl font-bold text-white font-pacifico" href="/">
             PantryChef
-          </span>
+          </a>
           <Image
             src={chefHat}
             width={50}
@@ -30,7 +30,7 @@ const navbar = () => {
         <div>
           <a
             href="#signup"
-            className="text-white text-lg underline hover:no-underline"
+            className="text-lg text-white underline hover:no-underline"
           >
             Sign Up
           </a>
