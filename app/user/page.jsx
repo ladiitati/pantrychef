@@ -6,6 +6,7 @@ import React from "react";
 const user = () => {
   return (
     <>
+      {/* Profile Card */}
       <section className="flex items-center justify-center p-6 mb-24 bg-pastel-green">
         {/* Profile Card */}
         <div className="bg-pastel-green w-full max-w-md h-[500px] rounded-lg flex flex-col items-center justify-center p-6">
@@ -79,65 +80,8 @@ const user = () => {
           </div>
         </div>
       </section>
-      {/* <section className="my-24 create-a-recipe">
-        <div className="flex text-center">
-          <div className="w-full max-w-[1020px] bg-white">
-            <h1 className="text-3xl font-medium underline font-playfair text-pastel-green">
-              Create A Recipe
-            </h1>
-          </div>
-        </div>
-        <RecipeOfTheDay />
-      </section> */}
 
-      {/* <section className="my-24">
-      <div className="w-full max-w-[1020px] mx-auto">
-    
-          <h1 className="mb-8 text-3xl font-medium underline font-playfair text-pastel-green">
-            Create A Recipe
-          </h1>
-
-    
-          <div>
-            <RecipeOfTheDay />
-          </div>
-        </div> 
-      </section> */}
-
-      {/* <section className="my-24 create-a-recipe">
-        <h1 className="mb-10 text-4xl font-normal text-center underline font-playfair text-pastel-green">
-          Create A Recipe
-        </h1>
-        <RecipeOfTheDay />
-      </section> */}
-
-      {/* <section className="saved-recipes">
-        <h1 className="mb-10 text-4xl font-normal text-center underline font-playfair text-pastel-green">
-          Saved Recipe
-        </h1>
-        <div className="flex items-center gap-2">
-          <span className="text-sm font-medium text-gray-700">Sort By</span>
-          <span className="flex items-center text-sm font-medium cursor-pointer text-pastel-green hover:underline">
-            Relevance
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-4 h-4 ml-1"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth="2"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M19 9l-7 7-7-7"
-              />
-            </svg>
-          </span>
-        </div>
-        <RecipeGrid />
-      </section> */}
-
+      {/* Create a recipe section */}
       <section className="my-24 w-full max-w-[1020px] mx-auto">
         <div className="flex items-center justify-between mb-8">
           {/* Heading */}
@@ -148,6 +92,7 @@ const user = () => {
         <RecipeOfTheDay />
       </section>
 
+      {/* Saved Recipes  */}
       <section className="mt-24 w-full max-w-[1020px] mx-auto">
         <div className="flex items-center justify-between pb-2">
           {/* Heading */}

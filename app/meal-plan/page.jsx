@@ -4,29 +4,36 @@ import Navbar from "@components/Navbar";
 import Tag from "@components/Tag";
 
 const MealPlanTable = () => {
+
+    // const mealplan = '...randomurl'
+    // {} Object
+    // [] array
+    const mealplan = {
+        Sunday: ["Jamaican Beans & Peas", "Chocolate Chip Peanut Butter Oatmeal"],
+        Monday: [
+          "Jamaican Beans & Peas",
+          "Chocolate Chip Peanut Butter Oatmeal",
+          "Jamaican Beans & Peas",
+        ],
+        Tuesday: [
+          "Jamaican Beans & Peas",
+          "Chocolate Chip Peanut Butter Oatmeal",
+          "Chocolate Chip Peanut Butter Oatmeal",
+          "Rice & Stew",
+        ],
+        Wednesday: ["Chocolate Chip Peanut Butter Oatmeal"],
+        Thursday: ['rice&beans'],
+        Friday: [
+          "Jamaican Beans & Peas",
+          "Chocolate Chip Peanut Butter Oatmeal",
+          "Jamaican Beans & Peas",
+        ],
+        Saturday: [],
+      }
+
   // Sample data for the week
-  const [weekData, setWeekData] = useState({
-    Sunday: ["Jamaican Beans & Peas", "Chocolate Chip Peanut Butter Oatmeal"],
-    Monday: [
-      "Jamaican Beans & Peas",
-      "Chocolate Chip Peanut Butter Oatmeal",
-      "Jamaican Beans & Peas",
-    ],
-    Tuesday: [
-      "Jamaican Beans & Peas",
-      "Chocolate Chip Peanut Butter Oatmeal",
-      "Chocolate Chip Peanut Butter Oatmeal",
-      "Rice & Stew",
-    ],
-    Wednesday: ["Chocolate Chip Peanut Butter Oatmeal"],
-    Thursday: [],
-    Friday: [
-      "Jamaican Beans & Peas",
-      "Chocolate Chip Peanut Butter Oatmeal",
-      "Jamaican Beans & Peas",
-    ],
-    Saturday: [],
-  });
+  const [weekData, setWeekData] = useState(mealplan);
+//   const weekData = mealplan
 
   // Function to remove a tag from the respective day's meals
   const handleRemoveTag = (day, meal) => {

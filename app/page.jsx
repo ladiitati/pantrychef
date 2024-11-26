@@ -20,6 +20,7 @@ const Home = () => {
     localStorage.setItem("isSaved", JSON.stringify(!isSaved));
   };
 
+
   return (
     <div>
       <Navbar />
