@@ -89,6 +89,23 @@ const Home = () => {
       tags: ["Vegan", "Vegetarian"],
     },
   ];
+  const buildFilterQuery = (filters) => {
+    return Object.entries(filters)
+      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+      .join("&");
+  };
+
+  const handleFilterSubmit = (filters) => {
+    console.log("Applied Filters: ", filters);
+    const baseUrl = `https://api.spoonacular.com/recipes/complexSearch`;
+    const filterQuery = buildFilterQuery(filters);
+    const numberOfResults = 5;
+
+    const fullUrl = `${baseUrl}?query=${filterQuery}&number=${numberOfResults}`;
+
+    console.log(fullUrl);
+  };
+
   return (
     <div>
       <Navbar />
@@ -115,7 +132,7 @@ const Home = () => {
         </div>
       </section>
       <section className="mt-24 mb-24 filter-bar">
-        <Filter />
+        <Filter onFilterSubmit={handleFilterSubmit} />
       </section>
       <section className="search-results">
         <h1 className="mb-20 text-4xl font-bold text-center font-mulish text-pastel-green">

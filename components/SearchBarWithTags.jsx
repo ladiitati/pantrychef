@@ -4,7 +4,7 @@ import Image from "next/image";
 import Tag from "./Tag";
 import searchIcon from "../public/assets/icons/svg/searchIcon.svg";
 
-const SearchBarWithTags = () => {
+const SearchBarWithTags = ({ onTagsChange, onClickGenerate }) => {
   const [inputValue, setInputValue] = useState("");
   const [tags, setTags] = useState([]);
 
@@ -16,10 +16,12 @@ const SearchBarWithTags = () => {
     if (value.includes(",")) {
       const splitValues = value.split(",");
       const newTags = splitValues.slice(0, -1); // Exclude the empty value after the last comma
-      setTags([
+      const updatedTags = [
         ...tags,
         ...newTags.map((tag) => tag.trim()).filter((tag) => tag),
-      ]); // Trim and remove empty tags
+      ]; // Trim and remove empty tags
+      setTags(updatedTags);
+      onTagsChange(updatedTags);
       setInputValue(""); // Reset input after processing
     } else {
       setInputValue(value); // Update input value
@@ -28,13 +30,17 @@ const SearchBarWithTags = () => {
 
   // Handle tag removal
   const handleRemoveTag = (tagToRemove) => {
-    setTags(tags.filter((tag) => tag !== tagToRemove));
+    const updatedTags = tags.filter((tag) => tag !== tagToRemove);
+    setTags(updatedTags);
+    onTagsChange(updatedTags);
   };
 
   // Handle Generate Button Click
   const handleGenerate = () => {
-    console.log("Searched Items:", tags); // Log the tags array
-    alert(`Searched Items: ${tags.join(", ")}`); // Optional: show alert with tags
+    // console.log("Searched Items:", tags); // Log the tags array
+    // alert(`Searched Items: ${tags.join(", ")}`); // Optional: show alert with tags
+    // setTags([]); Incase of event where all tags should be clearede when "Generate" is clicked 
+    onClickGenerate();
   };
 
   return (

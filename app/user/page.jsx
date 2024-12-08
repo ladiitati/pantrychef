@@ -89,7 +89,7 @@ const user = () => {
             Create A Recipe
           </h1>
         </div>
-        <RecipeOfTheDay />
+        {/* <RecipeOfTheDay /> */}
       </section>
 
       {/* Saved Recipes  */}
