@@ -1,6 +1,7 @@
 "use client";
 import React from "react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const RecipeOfTheDay = ({
   id,
@@ -11,6 +12,8 @@ const RecipeOfTheDay = ({
   dishTypes,
   summary,
 }) => {
+
+  const router = useRouter()
   const [isSaved, setIsSaved] = useState(false);
 
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -19,6 +22,9 @@ const RecipeOfTheDay = ({
     setShowFullSummary(!showFullSummary);
   };
 
+  const handleSeeFullRecipe = () => {
+    router.push(`/recipe?id=${id}`)
+  }
   // Truncate the summary if not expanded
   // const truncatedSummary = summary.slice(0, 250) + "...";
 
@@ -100,7 +106,7 @@ const RecipeOfTheDay = ({
         </p>
 
         <div className="flex justify-end mt-4">
-          <button className="px-4 py-2 mt-6 text-sm font-semibold text-white rounded-full sm:text-base md:text-lg bg-pastel-green hover:bg-opacity-60">
+          <button onClick={handleSeeFullRecipe} className="px-4 py-2 mt-6 text-sm font-semibold text-white rounded-full sm:text-base md:text-lg bg-pastel-green hover:bg-opacity-60">
             See full Recipe
           </button>
         </div>
