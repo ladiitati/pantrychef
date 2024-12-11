@@ -199,14 +199,14 @@ const RecipeDetails = () => {
                 </p>
                 <p className="text-sm font-medium text-gray-600">Minutes</p>
               </div>
-              <div className="text-center">
+              {/* <div className="text-center">
                 <p className="text-2xl font-bold text-leaf-brown">
                   $ {recipe?.pricePerServing}
                 </p>
-                {/* <p className="text-sm font-medium text-gray-600">
+                <p className="text-sm font-medium text-gray-600">
                   Price per serving
-                </p> */}
-              </div>
+                </p>
+              </div> */}
             </div>
 
             {/* Tags */}
