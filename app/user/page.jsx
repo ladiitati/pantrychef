@@ -5,6 +5,7 @@ import React from "react";
 import { supabase } from "@lib/supabase";
 import { useUser } from "@context/UserContext";
 import { useRouter } from "next/navigation";
+import BackButton from "@components/BackButton";
 
 const user = () => {
 
@@ -150,6 +151,8 @@ const user = () => {
         </div>
         <RecipeGrid />
       </section>
+
+      <BackButton />
     </>
   );
 };
