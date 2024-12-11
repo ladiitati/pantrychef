@@ -2,8 +2,28 @@
 import RecipeGrid from "@components/RecipeGrid";
 import RecipeOfTheDay from "@components/RecipeOfTheDay";
 import React from "react";
+import { supabase } from "@lib/supabase";
+import { useUser } from "@context/UserContext";
+import { useRouter } from "next/navigation";
 
 const user = () => {
+
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) {
+      console.error("Error signing out:", error.message);
+    } else {
+      console.log("User signed out successfully.");
+      alert("User Signed Out Succesfully");
+      router.push('/')
+    }
+  };
+
+  const user = useUser();
+
+  if (!user) return <p>loading user .....</p>;
   return (
     <>
       {/* Profile Card */}
@@ -12,31 +32,39 @@ const user = () => {
         <div className="bg-pastel-green w-full max-w-md h-[500px] rounded-lg flex flex-col items-center justify-center p-6">
           {/* Profile Avatar */}
           <div className="flex items-center justify-center w-24 h-24 bg-gray-300 rounded-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-12 h-12 text-gray-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth="2"
-                d="M12 14c4.418 0 8 1.791 8 4M12 14c-4.418 0-8 1.791-8 4m8-4a4 4 0 100-8 4 4 0 000 8z"
+            {user.avatar="" ? (
+              <img
+                src={user.avatar}
+                alt="User Avatar"
+                className="w-16 h-16 rounded-full"
               />
-            </svg>
+            ) : (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-12 h-12 text-gray-600"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 14c4.418 0 8 1.791 8 4M12 14c-4.418 0-8 1.791-8 4m8-4a4 4 0 100-8 4 4 0 000 8z"
+                />
+              </svg>
+            )}
           </div>
 
           {/* Email Address */}
           <p className="mt-4 text-3xl font-medium text-black text-opacity-60">
-            christophernolan@gmail.com
+            {user.email || ''}
           </p>
 
           {/* Action Links */}
           <div className="flex flex-col items-center mt-4 space-y-2">
             <a
-              href="#"
+              href="/meal-plan"
               className="flex items-center gap-2 px-4 py-2 text-2xl font-medium bg-white rounded-md shadow text-pastel-green hover:bg-opacity-80"
             >
               View Meal Planner
@@ -58,7 +86,7 @@ const user = () => {
 
             <button
               className="flex items-center gap-2 text-xl font-medium text-red-600 underline hover:text-red-800"
-              onClick={() => alert("Logging out...")}
+              onClick={handleSignOut}
             >
               Logout
               <svg
@@ -82,15 +110,13 @@ const user = () => {
       </section>
 
       {/* Create a recipe section */}
-      <section className="my-24 w-full max-w-[1020px] mx-auto">
+      {/* <section className="my-24 w-full max-w-[1020px] mx-auto">
         <div className="flex items-center justify-between mb-8">
-          {/* Heading */}
           <h1 className="text-3xl font-medium underline text-pastel-green font-playfair">
             Create A Recipe
           </h1>
         </div>
-        {/* <RecipeOfTheDay /> */}
-      </section>
+      </section> */}
 
       {/* Saved Recipes  */}
       <section className="mt-24 w-full max-w-[1020px] mx-auto">

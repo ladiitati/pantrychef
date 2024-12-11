@@ -12,6 +12,7 @@ import jokeImage from "../public/assets/images/png/jokeImage.png";
 import triviaImage from "../public/assets/images/png/triviaImage.png";
 import Image from "next/image";
 import { fetchData, fetchDataWithLocalStorageAndExpiry } from "@utils/network";
+import { supabase } from "@lib/supabase";
 
 require("dotenv").config();
 
@@ -404,6 +405,22 @@ const Home = () => {
     }
   };
 
+  const handleLogin = async () => {
+    const { user, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        scopes: "profile email",
+      },
+    });
+
+    if (user) {
+      await supabase.from("users").upsert({
+        id: user.id,
+        email: user.email,
+      });
+    }
+  };
+
   // useEffect(() => {
   //   fetchRandomRecipes();
   //   fetchRandomTrivia();
@@ -521,7 +538,7 @@ const Home = () => {
 
               {/* Button Section */}
               <div className="mt-6 md:mt-0">
-                <button className="px-6 py-4 text-lg font-semibold leading-none text-white rounded-full sm:text-xl md:text-2xl lg:text-3xl font-mulish bg-pastel-green hover:bg-pastel-green hover:bg-opacity-60">
+                <button onClick={handleLogin} className="px-6 py-4 text-lg font-semibold leading-none text-white rounded-full sm:text-xl md:text-2xl lg:text-3xl font-mulish bg-pastel-green hover:bg-pastel-green hover:bg-opacity-60">
                   Sign Up
                 </button>
               </div>

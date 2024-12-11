@@ -203,9 +203,9 @@ const RecipeDetails = () => {
                 <p className="text-2xl font-bold text-leaf-brown">
                   $ {recipe?.pricePerServing}
                 </p>
-                <p className="text-sm font-medium text-gray-600">
+                {/* <p className="text-sm font-medium text-gray-600">
                   Price per serving
-                </p>
+                </p> */}
               </div>
             </div>
 
