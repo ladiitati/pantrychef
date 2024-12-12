@@ -30,7 +30,6 @@ const RecipeDetails = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDays, setSelectedDays] = useState([]);
-  const recipeName = "Chocolate Chip Peanut Butter Oatmeal";
 
   const handleDayToggle = (day) => {
     setSelectedDays((prev) =>
@@ -38,10 +37,40 @@ const RecipeDetails = () => {
     );
   };
 
-  const handleDone = () => {
-    console.log("Selected Days:", selectedDays);
-    console.log("Recipe Name:", recipeName);
-    setIsModalOpen(false);
+  // const handleDone = () => {
+  //   console.log("Selected Days:", selectedDays);
+  //   console.log("Recipe Name:", recipeName);
+  //   setIsModalOpen(false);
+  // };
+
+  const handleDone = async () => {
+    if (!selectedDays.length) {
+      alert("Please select at least one day.");
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.from("meal_plan").insert(
+        selectedDays.map((day) => ({
+          user_id: user.id,
+          day_of_week: day,
+          recipe_name: recipe?.title,
+          recipe_id: recipe?.id,
+        }))
+      );
+
+      if (error) {
+        console.error("Error saving meal plan:", error.message);
+        alert("Failed to save meal plan. Please try again.");
+      } else {
+        console.log("Meal plan saved successfully:", data);
+        alert("Succesfully added to meal plan");
+        setIsModalOpen(false); // Close the modal
+      }
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      alert("An error occurred. Please try again.");
+    }
   };
 
   const fetchRecipeDetails = async () => {
@@ -67,16 +96,57 @@ const RecipeDetails = () => {
   // const fetchRelatedRecipes = async () => {
   //   setLoading(true);
   //   setError(null);
-  //   const url = `https://api.spoonacular.com/recipes/${id}/similar`;
 
-  //   const { data, error } = await fetchDataWithLocalStorageAndExpiry(url);
-  //   if (error) {
-  //     setError(error);
-  //   } else {
-  //     setRelatedRecipes(data);
-  //     console.log(data);
+  //   try {
+  //     // Fetch related recipes
+  //     const number = 2;
+  //     const relatedUrl = `https://api.spoonacular.com/recipes/${id}/similar?=${number}`;
+
+  //     const { data: relatedData, error: relatedError } =
+  //       await fetchDataWithLocalStorageAndExpiry(relatedUrl);
+  //     console.log("related data", relatedData);
+
+  //     if (relatedError) {
+  //       setError("Failed to fetch related recipes.");
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     // Fetch detailed information for each related recipe
+  //     const detailedRecipes = await Promise.all(
+  //       relatedData.map(async (relatedRecipe) => {
+  //         const detailUrl = `https://api.spoonacular.com/recipes/${relatedRecipe.id}/information`;
+  //         console.log("detail url", detailUrl);
+  //         const { data: detailedData, error: detailError } =
+  //           await fetchDataWithLocalStorageAndExpiry(detailUrl);
+
+  //         if (detailError) {
+  //           console.error(
+  //             `Failed to fetch details for recipe ID ${relatedRecipe.id}`
+  //           );
+  //           return null;
+  //         }
+
+  //         // Map the required fields for the RecipeCard component
+  //         return {
+  //           id: detailedData.id,
+  //           image: detailedData.image,
+  //           title: detailedData.title,
+  //           tags: detailedData.dishTypes || [], // Default to empty array if no tags
+  //           time: detailedData.readyInMinutes,
+  //           servings: detailedData.servings,
+  //         };
+  //       })
+  //     );
+
+  //     console.log("detailed recipes", detailedRecipes);
+  //     // Filter out any failed requests (null values)
+  //     setRelatedRecipes(detailedRecipes.filter((recipe) => recipe !== null));
+  //   } catch (err) {
+  //     setError("An unexpected error occurred.");
+  //   } finally {
+  //     setLoading(false);
   //   }
-  //   setLoading(false);
   // };
 
   const fetchRelatedRecipes = async () => {
@@ -85,11 +155,12 @@ const RecipeDetails = () => {
 
     try {
       // Fetch related recipes
-      const number = 2;
-      const relatedUrl = `https://api.spoonacular.com/recipes/${id}/similar?=${number}`;
+      const number = 7;
+      const relatedUrl = `https://api.spoonacular.com/recipes/${id}/similar?number=${number}`;
 
       const { data: relatedData, error: relatedError } =
         await fetchDataWithLocalStorageAndExpiry(relatedUrl);
+
       console.log("related data", relatedData);
 
       if (relatedError) {
@@ -98,37 +169,37 @@ const RecipeDetails = () => {
         return;
       }
 
-      // Fetch detailed information for each related recipe
-      const detailedRecipes = await Promise.all(
-        relatedData.map(async (relatedRecipe) => {
-          const detailUrl = `https://api.spoonacular.com/recipes/${relatedRecipe.id}/information`;
-          console.log("detail url", detailUrl);
-          const { data: detailedData, error: detailError } =
-            await fetchDataWithLocalStorageAndExpiry(detailUrl);
+      // Extract all related recipe IDs
+      const relatedRecipeIds = relatedData.map((recipe) => recipe.id).join(",");
 
-          if (detailError) {
-            console.error(
-              `Failed to fetch details for recipe ID ${relatedRecipe.id}`
-            );
-            return null;
-          }
+      // Fetch detailed information for all related recipes using the bulk endpoint
+      const bulkDetailUrl = `https://api.spoonacular.com/recipes/informationBulk?ids=${relatedRecipeIds}`;
+      const { data: detailedData, error: bulkError } =
+        await fetchDataWithLocalStorageAndExpiry(bulkDetailUrl);
 
-          // Map the required fields for the RecipeCard component
-          return {
-            id: detailedData.id,
-            image: detailedData.image,
-            title: detailedData.title,
-            tags: detailedData.dishTypes || [], // Default to empty array if no tags
-            time: detailedData.readyInMinutes,
-            servings: detailedData.servings,
-          };
-        })
-      );
+      if (bulkError) {
+        console.error("Error fetching detailed related recipes:", bulkError);
+        setError("Failed to fetch detailed related recipes.");
+        setLoading(false);
+        return;
+      }
 
-      console.log("detailed recipes", detailedRecipes);
-      // Filter out any failed requests (null values)
-      setRelatedRecipes(detailedRecipes.filter((recipe) => recipe !== null));
+      console.log("Detailed Related Recipes:", detailedData);
+
+      // Map the required fields for the RecipeCard component
+      const detailedRecipes = detailedData.map((recipe) => ({
+        id: recipe.id,
+        image: recipe.image,
+        title: recipe.title,
+        tags: recipe.dishTypes || [], // Default to empty array if no tags
+        time: recipe.readyInMinutes,
+        servings: recipe.servings,
+      }));
+
+      // Update the state
+      setRelatedRecipes(detailedRecipes);
     } catch (err) {
+      console.error("An unexpected error occurred:", err);
       setError("An unexpected error occurred.");
     } finally {
       setLoading(false);
@@ -148,7 +219,6 @@ const RecipeDetails = () => {
     setLoading(false);
   };
 
-  // useEffect(() => {
   //   if (!id) {
   //     console.error("No valid ID found, skipping API calls.");
   //     return;
@@ -263,7 +333,12 @@ const RecipeDetails = () => {
 
             {/* Actions */}
             <div className="flex mt-6 space-x-4">
-              <button onClick={toggleSave} className={`flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-cherry-red ${isSaved ? ' bg-cherry-red text-white' : 'border-cherry-red' } hover:bg-cherry-red hover:text-white`}>
+              <button
+                onClick={toggleSave}
+                className={`flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-cherry-red ${
+                  isSaved ? " bg-cherry-red text-white" : "border-cherry-red"
+                } hover:bg-cherry-red hover:text-white`}
+              >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-5 h-5"
@@ -350,21 +425,25 @@ const RecipeDetails = () => {
           <h2 className="mb-4 text-2xl font-bold text-leaf-brown">
             Related Recipes
           </h2>
-          <div
-            className="flex p-4 space-x-4 overflow-x-scroll"
-            key={relatedRecipes?.map((recipe) => recipe.id)}
-          >
-            {relatedRecipes?.map((recipe) => (
-              <RecipeCard
-                id={recipe.id}
-                image={recipe.image}
-                title={recipe.title}
-                tags={recipe.tags}
-                time={recipe.time}
-                servings={recipe.servings}
-              />
-            ))}
-          </div>
+          {relatedRecipes.length < 1 ? (
+            <p>No Related Recipes Found ...</p>
+          ) : (
+            <div
+              className="flex p-4 space-x-4 overflow-x-scroll"
+              key={relatedRecipes?.map((recipe) => recipe.id)}
+            >
+              {relatedRecipes?.map((recipe) => (
+                <RecipeCard
+                  id={recipe.id}
+                  image={recipe.image}
+                  title={recipe.title}
+                  tags={recipe.tags}
+                  time={recipe.time}
+                  servings={recipe.servings}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Modal */}

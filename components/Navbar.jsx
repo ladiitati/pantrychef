@@ -3,13 +3,15 @@ import Image from "next/image";
 import chefHat from "../public/assets/icons/svg/chefHat.svg";
 import { supabase } from "@lib/supabase";
 import { useUser } from "@context/UserContext";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [userDetails, setUserDetails] = useState();
 
   const user = useUser();
-  console.log(user)
+  console.log(user);
+  const router = useRouter()
 
   const handleLogin = async () => {
     const { user, error } = await supabase.auth.signInWithOAuth({
@@ -34,6 +36,7 @@ const Navbar = () => {
     } else {
       console.log("User signed out successfully.");
       alert("User Signed Out Succesfully");
+      router.push('/')
     }
   };
 
@@ -91,7 +94,7 @@ const Navbar = () => {
       <div className="container flex items-center justify-between mx-auto">
         {/* Left: Login */}
         <div className="hidden md:block">
-        {!user ? (
+          {!user ? (
             <a
               onClick={handleLogin}
               className="text-lg text-white underline cursor-pointer font-mulish hover:no-underline"
@@ -171,13 +174,27 @@ const Navbar = () => {
               onClick={handleLogin}
               className="text-lg text-white underline font-mulish hover:no-underline"
             >
-              Login
+              Login/SignUp
             </button>
             <a
               href="#signup"
               className="text-lg text-white underline font-mulish hover:no-underline"
             >
-              Sign Up
+              {!user ? (
+                <p className="text-lg text-white">Hello there </p>
+              ) : (
+                <p className="text-lg text-white">
+                  Welcome{" "}
+                  <span>
+                    <a
+                      href="/user"
+                      className="text-lg italic text-white underline hover:no-underline"
+                    >
+                      {user?.fullName}
+                    </a>
+                  </span>
+                </p>
+              )}
             </a>
           </div>
         </div>

@@ -33,7 +33,7 @@ const RecipeOfTheDay = ({
   const toggleSave = async () => {
     if (!user?.id) {
       console.log("User must be logged in to save a recipe.");
-      alert("You must be logged in to save a recipe")
+      alert("You must be logged in to save a recipe");
       return;
     }
 
@@ -49,7 +49,7 @@ const RecipeOfTheDay = ({
         console.error("Error unsaving recipe:", error.message);
       } else {
         setIsSaved(false);
-        alert("Recipe removed to Favorites")
+        alert(`"${title}" REMOVED from Favorites`);
       }
     } else {
       // Save the recipe
@@ -62,11 +62,10 @@ const RecipeOfTheDay = ({
         console.error("Error saving recipe:", error.message);
       } else {
         setIsSaved(true);
-        alert("Recipe saved to Favorites")
+        alert(`${title} added to Favorites`);
       }
     }
   };
-
 
   useEffect(() => {
     // Check if the recipe is already saved for this user

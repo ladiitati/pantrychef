@@ -125,78 +125,14 @@ const Home = () => {
   };
 
   // const fetchSearchResults = async () => {
-  //   setLoading(true);
-  //   setError(false);
-
-  //   try {
-  //     // Step 1: Fetch search results
-  //     const baseUrl = `https://api.spoonacular.com/recipes/findByIngredients`;
-  //     const ingredientsQuery = buildIngredientsQuery(searchTags);
-  //     const numberOfResults = 5;
-
-  //     const fullUrl = `${baseUrl}?ingredients=${ingredientsQuery}&number=${numberOfResults}`;
-
-  //     const { data, error } = await fetchData(fullUrl);
-  //     console.log(data);
-
-  //     if (error) {
-  //       console.error("Error fetching recipes:", error);
-  //       setLoadingSearchResults(false);
-  //       setErrorLoadingSearchResults(true);
-  //       return null;
-  //     }
-
-  //     //Step 2: Fetch detailed information aboout each search result
-
-  //     const detailedSearchResult = await Promise.all(
-  //       data.map(async (searchResult) => {
-  //         const detailedSearchResultUrl = `https://api.spoonacular.com/recipes/${searchResult.id}/information`;
-  //         console.log(detailedSearchResultUrl);
-  //         const { data: detailedSearchData, error: detailedSearchError } =
-  //           await fetchData(detailedSearchResultUrl);
-
-  //         if (detailedSearchError) {
-  //           console.error(
-  //             `Failed to fetch details for search result id ${searchResult.id}`
-  //           );
-  //           return null;
-  //         }
-
-  //         return {
-  //           id: detailedSearchData.id,
-  //           image: detailedSearchData.image,
-  //           title: detailedSearchData.title,
-  //           tags: detailedSearchData.dishTypes || [], // Default to empty array if no tags
-  //           time: detailedSearchData.readyInMinutes,
-  //           servings: detailedSearchData.servings,
-  //         };
-  //       })
-  //     );
-
-  //     console.log("detailedsearcresult", detailedSearchResult);
-
-  //     setSearchResults(data);
-  //     setDetailedSearchData(detailedSearchResult);
-  //     console.log("detailedsearchdata", detailedSearchData);
-  //     setLoadingSearchResults(false);
-
-  //     return data;
-  //   } catch (err) {
-  //     setError("An unexpected error occurred.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  // const fetchSearchResults = async () => {
   //   setLoadingSearchResults(true);
   //   setErrorLoadingSearchResults(false);
 
   //   try {
-  //     // Step 1: Fetch search results
+  //     // Fetch search results
   //     const baseUrl = `https://api.spoonacular.com/recipes/findByIngredients`;
   //     const ingredientsQuery = buildIngredientsQuery(searchTags);
-  //     const numberOfResults = 5;
+  //     const numberOfResults = 10;
 
   //     const fullUrl = `${baseUrl}?ingredients=${ingredientsQuery}&number=${numberOfResults}`;
 
@@ -211,13 +147,13 @@ const Home = () => {
 
   //     console.log("Search Results:", data);
 
-  //     // Step 2: Fetch detailed information for each search result
+  //     // Fetch detailed information for each search result
   //     const detailedSearchResult = await Promise.all(
   //       data.map(async (searchResult) => {
   //         const detailedSearchResultUrl = `https://api.spoonacular.com/recipes/${searchResult.id}/information`;
 
   //         const { data: detailedData, error: detailedSearchError } =
-  //           await fetchDataWithLocalStorageAndExpiry(detailedSearchResultUrl);
+  //           await fetchData(detailedSearchResultUrl);
 
   //         if (detailedSearchError) {
   //           console.error(
@@ -259,62 +195,56 @@ const Home = () => {
   const fetchSearchResults = async () => {
     setLoadingSearchResults(true);
     setErrorLoadingSearchResults(false);
-
+  
     try {
       // Fetch search results
       const baseUrl = `https://api.spoonacular.com/recipes/findByIngredients`;
       const ingredientsQuery = buildIngredientsQuery(searchTags);
-      const numberOfResults = 5;
-
+      const numberOfResults = 20;
+  
       const fullUrl = `${baseUrl}?ingredients=${ingredientsQuery}&number=${numberOfResults}`;
-
+  
       const { data, error } = await fetchDataWithLocalStorageAndExpiry(fullUrl);
-
+  
       if (error) {
         console.error("Error fetching recipes:", error);
         setLoadingSearchResults(false);
         setErrorLoadingSearchResults(true);
         return;
       }
-
+  
       console.log("Search Results:", data);
-
-      // Fetch detailed information for each search result
-      const detailedSearchResult = await Promise.all(
-        data.map(async (searchResult) => {
-          const detailedSearchResultUrl = `https://api.spoonacular.com/recipes/${searchResult.id}/information`;
-
-          const { data: detailedData, error: detailedSearchError } =
-            await fetchData(detailedSearchResultUrl);
-
-          if (detailedSearchError) {
-            console.error(
-              `Failed to fetch details for search result id ${searchResult.id}:`,
-              detailedSearchError
-            );
-            return null; // Skip this item on error
-          }
-
-          return {
-            id: detailedData.id,
-            image: detailedData.image,
-            title: detailedData.title,
-            tags: detailedData.dishTypes || [], // Default to empty array if no tags
-            time: detailedData.readyInMinutes,
-            servings: detailedData.servings,
-          };
-        })
-      );
-
-      console.log("Detailed Search Results:", detailedSearchResult);
-
-      // Filter out any null values
-      const validResults = detailedSearchResult.filter((item) => item !== null);
-
+  
+      // Extract all recipe IDs
+      const recipeIds = data.map((searchResult) => searchResult.id).join(",");
+  
+      // Fetch detailed information for all search results using the bulk endpoint
+      const detailedSearchResultUrl = `https://api.spoonacular.com/recipes/informationBulk?ids=${recipeIds}`;
+      const { data: detailedData, error: bulkError } = await fetchData(detailedSearchResultUrl);
+  
+      if (bulkError) {
+        console.error("Error fetching detailed recipes:", bulkError);
+        setLoadingSearchResults(false);
+        setErrorLoadingSearchResults(true);
+        return;
+      }
+  
+      console.log("Detailed Bulk Search Results:", detailedData);
+  
+      // Transform and store the detailed data
+      const validResults = detailedData.map((recipe) => ({
+        id: recipe.id,
+        image: recipe.image,
+        title: recipe.title,
+        tags: recipe.dishTypes || [], // Default to empty array if no tags
+        time: recipe.readyInMinutes,
+        servings: recipe.servings,
+      }));
+  
       // Update state
       setSearchResults(data); // Original search results
       setDetailedSearchData(validResults); // Detailed information
-
+  
       setLoadingSearchResults(false);
     } catch (err) {
       console.error("An unexpected error occurred:", err);
@@ -322,7 +252,8 @@ const Home = () => {
     } finally {
       setLoadingSearchResults(false);
     }
-  };
+  };  
+
 
   const handleGenerateSearchResults = () => {
     setIsSearchPage(true);
@@ -340,13 +271,11 @@ const Home = () => {
   };
 
   const handleFilterSubmit = async (filters) => {
-    // https://api.spoonacular.com/recipes/
-    // complexSearch?apiKey=d8fd543def7748ee88d85628cc61cbe9&includeIngredients=tomato,cheese&diet=gluten%20free&mealType=breakfast&maxReadyTime=&number=5
 
     console.log("Applied Filters: ", filters);
     const baseUrl = `https://api.spoonacular.com/recipes/complexSearch`;
     const filterQuery = buildFilterQuery(filters);
-    const numberOfResults = 5;
+    const numberOfResults = 20;
 
     const fullUrl = `${baseUrl}?includeIngredients=${searchTags}&${filterQuery}&number=${numberOfResults}`;
 

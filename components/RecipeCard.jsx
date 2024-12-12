@@ -106,7 +106,6 @@ import { supabase } from "@lib/supabase";
 import { useUser } from "@context/UserContext";
 import { useRouter } from "next/navigation";
 
-
 const RecipeCard = ({ id, image, title, tags, time, servings }) => {
   const [isSaved, setIsSaved] = useState(false);
   const user = useUser();
@@ -147,7 +146,7 @@ const RecipeCard = ({ id, image, title, tags, time, servings }) => {
         console.error("Error unsaving recipe:", error.message);
       } else {
         setIsSaved(false);
-        alert("Recipe removed to Favorites");
+        alert(`"${title}" REMOVED from Favorites`);
       }
     } else {
       // Save the recipe
@@ -160,12 +159,16 @@ const RecipeCard = ({ id, image, title, tags, time, servings }) => {
         console.error("Error saving recipe:", error.message);
       } else {
         setIsSaved(true);
-        alert("Recipe saved to Favorites");
+        alert(`"${title}" ADDED to Favorites`);
       }
     }
   };
 
   const handleRecipeClick = () => {
+    if (!user) {
+      alert("Please Login/Sign Up to view recipes");
+      return
+    }
     router.push(`/recipe?id=${id}`);
   };
 

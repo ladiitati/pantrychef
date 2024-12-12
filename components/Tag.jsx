@@ -1,10 +1,10 @@
 import React from "react";
 
-const Tag = ({ label, onRemove }) => {
+const Tag = ({ label, onRemove, onClickRecipeTitle }) => {
   return (
     <div className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-full bg-pastel-green">
       {/* Tag Label */}
-      <span>{label}</span>
+      <span className="cursor-pointer" onClick={onClickRecipeTitle}>{label}</span>
 
       {/* Close Button */}
       <button
