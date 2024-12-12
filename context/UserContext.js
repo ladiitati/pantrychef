@@ -23,6 +23,7 @@ export const UserProvider = ({ children }) => {
 
       if (user) {
         setUser({
+          id : user.id,
           email: user.email,
           fullName: user.user_metadata?.full_name || "",
           avatar: user.user_metadata?.avatar_url || "",

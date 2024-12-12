@@ -1,7 +1,9 @@
 "use client";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@context/UserContext";
+import { supabase } from "@lib/supabase";
 
 const RecipeOfTheDay = ({
   id,
@@ -12,9 +14,9 @@ const RecipeOfTheDay = ({
   dishTypes,
   summary,
 }) => {
-
-  const router = useRouter()
+  const router = useRouter();
   const [isSaved, setIsSaved] = useState(false);
+  const user = useUser();
 
   const [showFullSummary, setShowFullSummary] = useState(false);
 
@@ -23,15 +25,64 @@ const RecipeOfTheDay = ({
   };
 
   const handleSeeFullRecipe = () => {
-    router.push(`/recipe?id=${id}`)
-  }
+    router.push(`/recipe?id=${id}`);
+  };
   // Truncate the summary if not expanded
   // const truncatedSummary = summary.slice(0, 250) + "...";
 
-  const toggleSave = () => {
-    setIsSaved(!isSaved);
+  const toggleSave = async () => {
+    if (!user?.id) {
+      console.log("User must be logged in to save a recipe.");
+      alert("You must be logged in to save a recipe")
+      return;
+    }
+
+    if (isSaved) {
+      // Unsave the recipe
+      const { error } = await supabase
+        .from("saved_recipes")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("recipe_id", id);
+
+      if (error) {
+        console.error("Error unsaving recipe:", error.message);
+      } else {
+        setIsSaved(false);
+        alert("Recipe removed to Favorites")
+      }
+    } else {
+      // Save the recipe
+      const { error } = await supabase.from("saved_recipes").insert({
+        user_id: user.id,
+        recipe_id: id,
+      });
+
+      if (error) {
+        console.error("Error saving recipe:", error.message);
+      } else {
+        setIsSaved(true);
+        alert("Recipe saved to Favorites")
+      }
+    }
   };
 
+
+  useEffect(() => {
+    // Check if the recipe is already saved for this user
+    const checkIfSaved = async () => {
+      if (!user?.id) return;
+      const { data, error } = await supabase
+        .from("saved_recipes")
+        .select("id")
+        .eq("user_id", user.id)
+        .eq("recipe_id", id);
+      if (data && data.length > 0) {
+        setIsSaved(true);
+      }
+    };
+    checkIfSaved();
+  }, [user, id]);
   console.log(dishTypes);
 
   return (
@@ -106,7 +157,10 @@ const RecipeOfTheDay = ({
         </p>
 
         <div className="flex justify-end mt-4">
-          <button onClick={handleSeeFullRecipe} className="px-4 py-2 mt-6 text-sm font-semibold text-white rounded-full sm:text-base md:text-lg bg-pastel-green hover:bg-opacity-60">
+          <button
+            onClick={handleSeeFullRecipe}
+            className="px-4 py-2 mt-6 text-sm font-semibold text-white rounded-full sm:text-base md:text-lg bg-pastel-green hover:bg-opacity-60"
+          >
             See full Recipe
           </button>
         </div>

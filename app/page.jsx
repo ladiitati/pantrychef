@@ -13,11 +13,13 @@ import triviaImage from "../public/assets/images/png/triviaImage.png";
 import Image from "next/image";
 import { fetchData, fetchDataWithLocalStorageAndExpiry } from "@utils/network";
 import { supabase } from "@lib/supabase";
+import { useUser } from "@context/UserContext";
 
 require("dotenv").config();
 
 const Home = () => {
   const [isSaved, setIsSaved] = useState(false);
+  const user = useUser();
 
   useEffect(() => {
     const savedState = JSON.parse(localStorage.getItem("isSaved")) || false;
@@ -525,25 +527,32 @@ const Home = () => {
           </section>
 
           {/* call to action section */}
-          <section className="relative flex items-center h-auto px-6 py-12 mt-24 mb-24 bg-center bg-cover sm:px-10 bg-hero">
-            {/* Text and Button Wrapper */}
-            <div className="flex flex-col items-center justify-between w-full max-w-5xl mx-auto md:flex-row">
-              {/* Text Section */}
-              <div className="text-center text-white md:text-left">
-                <h1 className="w-full text-2xl font-normal leading-tight sm:text-3xl md:text-4xl lg:text-5xl font-playfair">
-                  Create An Account Today To Save Your Favorite Recipes for
-                  Later!!
-                </h1>
-              </div>
+          {user ? (
+            <p className="mt-24 mb-24"></p>
+          ) : (
+            <section className="relative flex items-center h-auto px-6 py-12 mt-24 mb-24 bg-center bg-cover sm:px-10 bg-hero">
+              {/* Text and Button Wrapper */}
+              <div className="flex flex-col items-center justify-between w-full max-w-5xl mx-auto md:flex-row">
+                {/* Text Section */}
+                <div className="text-center text-white md:text-left">
+                  <h1 className="w-full text-2xl font-normal leading-tight sm:text-3xl md:text-4xl lg:text-5xl font-playfair">
+                    Create An Account Today To Save Your Favorite Recipes for
+                    Later!!
+                  </h1>
+                </div>
 
-              {/* Button Section */}
-              <div className="mt-6 md:mt-0">
-                <button onClick={handleLogin} className="px-6 py-4 text-lg font-semibold leading-none text-white rounded-full sm:text-xl md:text-2xl lg:text-3xl font-mulish bg-pastel-green hover:bg-pastel-green hover:bg-opacity-60">
-                  Sign Up
-                </button>
+                {/* Button Section */}
+                <div className="mt-6 md:mt-0">
+                  <button
+                    onClick={handleLogin}
+                    className="px-6 py-4 text-lg font-semibold leading-none text-white rounded-full sm:text-xl md:text-2xl lg:text-3xl font-mulish bg-pastel-green hover:bg-pastel-green hover:bg-opacity-60"
+                  >
+                    Sign Up
+                  </button>
+                </div>
               </div>
-            </div>
-          </section>
+            </section>
+          )}
 
           {/* What's new today section  */}
           <section className="whats-new-today ">

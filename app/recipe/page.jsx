@@ -10,10 +10,14 @@ import {
   fetchHtmlDataWithLocalStorageAndExpiry,
 } from "@utils/network";
 import BackButton from "@components/BackButton";
+import { useUser } from "@context/UserContext";
+import { supabase } from "@lib/supabase";
 
 const RecipeDetails = () => {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
+  const [isSaved, setIsSaved] = useState(false);
+  const user = useUser();
   console.log(id);
 
   const [recipe, setRecipe] = useState(null);
@@ -47,7 +51,7 @@ const RecipeDetails = () => {
       setLoading(false);
       return;
     }
-    
+
     const url = `https://api.spoonacular.com/recipes/${id}/information`;
 
     const { data, error } = await fetchDataWithLocalStorageAndExpiry(url);
@@ -81,7 +85,7 @@ const RecipeDetails = () => {
 
     try {
       // Fetch related recipes
-      const number = 2
+      const number = 2;
       const relatedUrl = `https://api.spoonacular.com/recipes/${id}/similar?=${number}`;
 
       const { data: relatedData, error: relatedError } =
@@ -153,6 +157,42 @@ const RecipeDetails = () => {
   //   fetchRelatedRecipes();
   //   fetchNutritionLabelWidget();
   // }, [id]);
+  const toggleSave = async () => {
+    if (!user?.id) {
+      console.log("User must be logged in to save a recipe.");
+      alert("You must be logged in to save a recipe");
+      return;
+    }
+
+    if (isSaved) {
+      // Unsave the recipe
+      const { error } = await supabase
+        .from("saved_recipes")
+        .delete()
+        .eq("user_id", user.id)
+        .eq("recipe_id", id);
+
+      if (error) {
+        console.error("Error unsaving recipe:", error.message);
+      } else {
+        setIsSaved(false);
+        alert("Recipe removed to Favorites");
+      }
+    } else {
+      // Save the recipe
+      const { error } = await supabase.from("saved_recipes").insert({
+        user_id: user.id,
+        recipe_id: id,
+      });
+
+      if (error) {
+        console.error("Error saving recipe:", error.message);
+      } else {
+        setIsSaved(true);
+        alert("Recipe saved to Favorites");
+      }
+    }
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -223,7 +263,7 @@ const RecipeDetails = () => {
 
             {/* Actions */}
             <div className="flex mt-6 space-x-4">
-              <button className="flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-cherry-red border-cherry-red hover:bg-cherry-red hover:text-white">
+              <button onClick={toggleSave} className={`flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-cherry-red ${isSaved ? ' bg-cherry-red text-white' : 'border-cherry-red' } hover:bg-cherry-red hover:text-white`}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-5 h-5"
