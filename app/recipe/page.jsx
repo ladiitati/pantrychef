@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import Navbar from "@components/Navbar";
 import RecipeCard from "@components/RecipeCard";
 import recipes from "@models/recipes";
@@ -37,7 +37,7 @@ const RecipeDetails = () => {
     );
   };
 
-  // const handleDone = () => {
+
   //   console.log("Selected Days:", selectedDays);
   //   console.log("Recipe Name:", recipeName);
   //   setIsModalOpen(false);
@@ -175,7 +175,7 @@ const RecipeDetails = () => {
       // Fetch detailed information for all related recipes using the bulk endpoint
       const bulkDetailUrl = `https://api.spoonacular.com/recipes/informationBulk?ids=${relatedRecipeIds}`;
       const { data: detailedData, error: bulkError } =
-        await fetchDataWithLocalStorageAndExpiry(bulkDetailUrl);
+        await fetchData(bulkDetailUrl);
 
       if (bulkError) {
         console.error("Error fetching detailed related recipes:", bulkError);
@@ -492,4 +492,10 @@ const RecipeDetails = () => {
   );
 };
 
-export default RecipeDetails;
+const RecipeDetailsWithSuspense = () => (
+  <Suspense fallback={<p>Loading...</p>}>
+    <RecipeDetails />
+  </Suspense>
+);
+
+export default RecipeDetailsWithSuspense;

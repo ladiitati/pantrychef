@@ -6,7 +6,7 @@ import { supabase } from "@lib/supabase";
 import { useUser } from "@context/UserContext";
 import { useRouter } from "next/navigation";
 import BackButton from "@components/BackButton";
-import { fetchDataWithLocalStorageAndExpiry } from "@utils/network";
+import { fetchData, fetchDataWithLocalStorageAndExpiry } from "@utils/network";
 
 const user = () => {
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,7 @@ const user = () => {
     const idsQuery = recipeIds.join(",");
     const url = `https://api.spoonacular.com/recipes/informationBulk?ids=${idsQuery}`;
 
-    const { data, error } = await fetchDataWithLocalStorageAndExpiry(url);
+    const { data, error } = await fetchData(url);
     if (error) {
       console.error("Error fetching recipe details from Spoonacular:", error);
       return [];
@@ -58,6 +58,8 @@ const user = () => {
         .select("recipe_id")
         .eq("user_id", userId);
 
+        console.log('data from table', data)
+
       if (error) {
         console.error("Error fetching saved recipe IDs:", error);
         return null;
@@ -79,6 +81,7 @@ const user = () => {
 
     // Fetch full details from Spoonacular
     const recipeDetails = await fetchFullRecipeDetails(savedRecipeIds);
+    console.log('recipe details' ,recipeDetails)
     return recipeDetails;
   };
 
@@ -116,6 +119,7 @@ const user = () => {
   if (loading) {
     return <p>Loading saved recipes...</p>;
   }
+  console.log("logged in user", user);
 
   if (!user) {
     return <p>Please log in to see your saved recipes.</p>;
