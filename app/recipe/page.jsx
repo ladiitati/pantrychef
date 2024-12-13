@@ -7,6 +7,7 @@ import daysOfWeek from "@models/daysOfTheWeek";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
   fetchDataWithLocalStorageAndExpiry,
+  fetchData,
   fetchHtmlDataWithLocalStorageAndExpiry,
 } from "@utils/network";
 import BackButton from "@components/BackButton";
