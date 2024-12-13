@@ -34,7 +34,7 @@ const user = () => {
     const idsQuery = recipeIds.join(",");
     const url = `https://api.spoonacular.com/recipes/informationBulk?ids=${idsQuery}`;
 
-    const { data, error } = await fetchData(url);
+    const { data, error } = await fetchDataWithLocalStorageAndExpiry(url);
     if (error) {
       console.error("Error fetching recipe details from Spoonacular:", error);
       return [];

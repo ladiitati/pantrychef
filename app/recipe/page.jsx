@@ -176,7 +176,7 @@ const RecipeDetails = () => {
       // Fetch detailed information for all related recipes using the bulk endpoint
       const bulkDetailUrl = `https://api.spoonacular.com/recipes/informationBulk?ids=${relatedRecipeIds}`;
       const { data: detailedData, error: bulkError } =
-        await fetchData(bulkDetailUrl);
+        await fetchDataWithLocalStorageAndExpiry(bulkDetailUrl);
 
       if (bulkError) {
         console.error("Error fetching detailed related recipes:", bulkError);
@@ -336,7 +336,7 @@ const RecipeDetails = () => {
             <div className="flex mt-6 space-x-4">
               <button
                 onClick={toggleSave}
-                className={`flex items-center gap-2 px-4 py-2 bg-white border rounded-full text-cherry-red ${
+                className={`flex items-center gap-2 px-4 py-2 border rounded-full text-cherry-red ${
                   isSaved ? " bg-cherry-red text-white" : "border-cherry-red"
                 } hover:bg-cherry-red hover:text-white`}
               >
