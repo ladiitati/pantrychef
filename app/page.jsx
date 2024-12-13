@@ -449,6 +449,7 @@ const Home = () => {
               id={firstRecipe.id}
               image={firstRecipe.image}
               title={firstRecipe.title}
+              time={firstRecipe.time}
               servings={firstRecipe.servings}
               dishTypes={firstRecipe.dishTypes || []}
               summary={firstRecipe.summary}
